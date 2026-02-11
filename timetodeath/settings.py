@@ -27,6 +27,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
+# CSRF trusted origins for Cloudflare deployment
+CSRF_TRUSTED_ORIGINS = ["*"]
+
 
 # Application definition
 
