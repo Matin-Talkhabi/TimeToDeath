@@ -1,0 +1,230 @@
+{% extends 'life/base.html' %}
+
+{% block title %}Time To Death - Your Results{% endblock %}
+
+{% block extra_head %}
+<style>
+    .timer-number {
+        font-variant-numeric: tabular-nums;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8 max-w-6xl">
+    <!-- Header -->
+    <div class="text-center mb-8">
+        <h1 class="text-4xl md:text-5xl font-bold mb-4 text-white">Your Life Statistics</h1>
+        <p class="text-gray-400">Born: {{ birth_date|date:"F d, Y" }} | Estimated Death: {{ estimated_death_date|date:"F d, Y" }}</p>
+    </div>
+    
+    <!-- Life Percentage Bar -->
+    <div class="mb-8 bg-gray-700 rounded-lg p-6 border border-gray-600">
+        <div class="flex justify-between items-center mb-2">
+            <span class="text-sm font-medium text-gray-300">Life Progress</span>
+            <span class="text-lg font-bold text-white">{{ life_percentage }}%</span>
+        </div>
+        <div class="w-full bg-gray-600 rounded-full h-4 overflow-hidden">
+            <div class="bg-gradient-to-r from-red-500 to-red-600 h-4 rounded-full transition-all duration-300" 
+                 style="width: {{ life_percentage }}%"></div>
+        </div>
+    </div>
+    
+    <!-- Timer Cards Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <!-- Elapsed Life Card -->
+        <div class="bg-gradient-to-br from-red-900/50 to-red-800/30 rounded-lg shadow-xl p-6 border border-red-700/50">
+            <h2 class="text-2xl font-bold mb-4 text-red-200">Life Elapsed</h2>
+            <div class="space-y-3">
+                <div class="flex justify-between items-center">
+                    <span class="text-red-300">Years:</span>
+                    <span id="elapsed-years" class="text-3xl font-bold text-white timer-number">0</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-red-300">Months:</span>
+                    <span id="elapsed-months" class="text-3xl font-bold text-white timer-number">0</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-red-300">Days:</span>
+                    <span id="elapsed-days" class="text-3xl font-bold text-white timer-number">0</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-red-300">Hours:</span>
+                    <span id="elapsed-hours" class="text-3xl font-bold text-white timer-number">0</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-red-300">Minutes:</span>
+                    <span id="elapsed-minutes" class="text-3xl font-bold text-white timer-number">0</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-red-300">Seconds:</span>
+                    <span id="elapsed-seconds" class="text-3xl font-bold text-white timer-number">0</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Remaining Life Card -->
+        <div class="bg-gradient-to-br from-green-900/50 to-green-800/30 rounded-lg shadow-xl p-6 border border-green-700/50">
+            <h2 class="text-2xl font-bold mb-4 text-green-200">Life Remaining</h2>
+            <div class="space-y-3">
+                <div class="flex justify-between items-center">
+                    <span class="text-green-300">Years:</span>
+                    <span id="remaining-years" class="text-3xl font-bold text-white timer-number">0</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-green-300">Months:</span>
+                    <span id="remaining-months" class="text-3xl font-bold text-white timer-number">0</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-green-300">Days:</span>
+                    <span id="remaining-days" class="text-3xl font-bold text-white timer-number">0</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-green-300">Hours:</span>
+                    <span id="remaining-hours" class="text-3xl font-bold text-white timer-number">0</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-green-300">Minutes:</span>
+                    <span id="remaining-minutes" class="text-3xl font-bold text-white timer-number">0</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-green-300">Seconds:</span>
+                    <span id="remaining-seconds" class="text-3xl font-bold text-white timer-number">0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Action Buttons -->
+    <div class="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+        <a href="{% url 'life:generate_pdf' calculation.unique_id %}" 
+           class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-200 text-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800">
+            📄 Generate Life Calendar PDF
+        </a>
+        <button onclick="shareResults()" 
+                class="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-800">
+            🔗 Share Results
+        </button>
+        <a href="{% url 'life:index' %}" 
+           class="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-200 text-center focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-800">
+            🔄 Calculate Again
+        </a>
+    </div>
+    
+    <!-- Summary Stats -->
+    <div class="bg-gray-700 rounded-lg p-6 border border-gray-600">
+        <h3 class="text-xl font-semibold mb-4 text-white">Summary</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+            <div>
+                <p class="text-gray-400 text-sm">Estimated Lifespan</p>
+                <p class="text-2xl font-bold text-white">{{ calculation.estimated_lifespan_years|floatformat:1 }} years</p>
+            </div>
+            <div>
+                <p class="text-gray-400 text-sm">Life Lived</p>
+                <p class="text-2xl font-bold text-red-400">{{ elapsed_years }} years</p>
+            </div>
+            <div>
+                <p class="text-gray-400 text-sm">Life Remaining</p>
+                <p class="text-2xl font-bold text-green-400">{{ remaining_years }} years</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden data for JavaScript -->
+<script>
+    // Initial values from server
+    const initialElapsedSeconds = {{ elapsed_seconds }};
+    const initialRemainingSeconds = {{ remaining_seconds }};
+    const birthDate = new Date('{{ birth_date|date:"Y-m-d" }}');
+    const estimatedDeathDate = new Date('{{ estimated_death_date|date:"Y-m-d" }}');
+</script>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Timer state
+    let elapsedSeconds = initialElapsedSeconds;
+    let remainingSeconds = initialRemainingSeconds;
+    
+    // Helper function to format time components
+    function formatTime(totalSeconds, isElapsed) {
+        const now = new Date();
+        const baseDate = isElapsed ? birthDate : now;
+        const targetDate = isElapsed ? now : estimatedDeathDate;
+        
+        // Calculate years, months, days
+        let years = Math.floor(totalSeconds / (365.25 * 24 * 3600));
+        let remainingAfterYears = totalSeconds % (365.25 * 24 * 3600);
+        let months = Math.floor(remainingAfterYears / (30.44 * 24 * 3600));
+        let remainingAfterMonths = remainingAfterYears % (30.44 * 24 * 3600);
+        let days = Math.floor(remainingAfterMonths / (24 * 3600));
+        let remainingAfterDays = remainingAfterMonths % (24 * 3600);
+        
+        // Calculate hours, minutes, seconds
+        let hours = Math.floor(remainingAfterDays / 3600);
+        let remainingAfterHours = remainingAfterDays % 3600;
+        let minutes = Math.floor(remainingAfterHours / 60);
+        let seconds = Math.floor(remainingAfterHours % 60);
+        
+        return { years, months, days, hours, minutes, seconds };
+    }
+    
+    // Update timer displays
+    function updateTimers() {
+        // Update elapsed timer (increasing)
+        const elapsed = formatTime(elapsedSeconds, true);
+        document.getElementById('elapsed-years').textContent = elapsed.years;
+        document.getElementById('elapsed-months').textContent = elapsed.months;
+        document.getElementById('elapsed-days').textContent = elapsed.days;
+        document.getElementById('elapsed-hours').textContent = elapsed.hours;
+        document.getElementById('elapsed-minutes').textContent = elapsed.minutes;
+        document.getElementById('elapsed-seconds').textContent = elapsed.seconds;
+        
+        // Update remaining timer (decreasing)
+        const remaining = formatTime(Math.max(0, remainingSeconds), false);
+        document.getElementById('remaining-years').textContent = remaining.years;
+        document.getElementById('remaining-months').textContent = remaining.months;
+        document.getElementById('remaining-days').textContent = remaining.days;
+        document.getElementById('remaining-hours').textContent = remaining.hours;
+        document.getElementById('remaining-minutes').textContent = remaining.minutes;
+        document.getElementById('remaining-seconds').textContent = remaining.seconds;
+        
+        // Increment elapsed, decrement remaining
+        elapsedSeconds++;
+        if (remainingSeconds > 0) {
+            remainingSeconds--;
+        }
+    }
+    
+    // Share functionality
+    function shareResults() {
+        const shareUrl = '{{ share_url }}';
+        const elapsedYears = document.getElementById('elapsed-years').textContent;
+        const remainingYears = document.getElementById('remaining-years').textContent;
+        const shareText = `Check out my life statistics! I've lived ${elapsedYears} years and have ${remainingYears} years remaining.`;
+        
+        if (navigator.share) {
+            navigator.share({
+                title: 'My Life Statistics - Time To Death',
+                text: shareText,
+                url: shareUrl
+            }).catch(err => console.log('Error sharing:', err));
+        } else {
+            // Fallback: copy to clipboard
+            navigator.clipboard.writeText(shareUrl).then(() => {
+                alert('Link copied to clipboard!');
+            }).catch(() => {
+                // Final fallback: show URL
+                prompt('Copy this link:', shareUrl);
+            });
+        }
+    }
+    
+    // Initialize timers immediately
+    updateTimers();
+    
+    // Update timers every second
+    setInterval(updateTimers, 1000);
+</script>
+{% endblock %}

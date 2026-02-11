@@ -1,0 +1,157 @@
+{% extends 'life/base.html' %}
+
+{% block title %}Time To Death - Calculate Your Lifespan{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-12 max-w-2xl">
+    <!-- Header -->
+    <div class="text-center mb-12">
+        <h1 class="text-5xl font-bold mb-4 text-white">Time To Death</h1>
+        <p class="text-xl text-gray-400">Discover how much time you have left and how much you've already lived</p>
+    </div>
+    
+    <!-- Form Card -->
+    <div class="bg-gray-700 rounded-lg shadow-xl p-8 border border-gray-600">
+        <h2 class="text-2xl font-semibold mb-6 text-white">Tell Us About Yourself</h2>
+        
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+            
+            <!-- Basic Information Section -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-medium text-gray-300 border-b border-gray-600 pb-2">Basic Information</h3>
+                
+                <div>
+                    <label for="{{ form.date_of_birth.id_for_label }}" class="block text-sm font-medium text-gray-300 mb-2">
+                        {{ form.date_of_birth.label }}
+                    </label>
+                    {{ form.date_of_birth }}
+                    {% if form.date_of_birth.errors %}
+                        <p class="mt-1 text-sm text-red-400">{{ form.date_of_birth.errors.0 }}</p>
+                    {% endif %}
+                    {% if form.date_of_birth.help_text %}
+                        <p class="mt-1 text-xs text-gray-400">{{ form.date_of_birth.help_text }}</p>
+                    {% endif %}
+                </div>
+                
+                <div>
+                    <label for="{{ form.gender.id_for_label }}" class="block text-sm font-medium text-gray-300 mb-2">
+                        {{ form.gender.label }}
+                    </label>
+                    {{ form.gender }}
+                    {% if form.gender.errors %}
+                        <p class="mt-1 text-sm text-red-400">{{ form.gender.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Physical Information Section -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-medium text-gray-300 border-b border-gray-600 pb-2">Physical Information</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="{{ form.weight_kg.id_for_label }}" class="block text-sm font-medium text-gray-300 mb-2">
+                            {{ form.weight_kg.label }}
+                        </label>
+                        {{ form.weight_kg }}
+                        {% if form.weight_kg.errors %}
+                            <p class="mt-1 text-sm text-red-400">{{ form.weight_kg.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <div>
+                        <label for="{{ form.height_cm.id_for_label }}" class="block text-sm font-medium text-gray-300 mb-2">
+                            {{ form.height_cm.label }}
+                        </label>
+                        {{ form.height_cm }}
+                        {% if form.height_cm.errors %}
+                            <p class="mt-1 text-sm text-red-400">{{ form.height_cm.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Lifestyle Section -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-medium text-gray-300 border-b border-gray-600 pb-2">Lifestyle</h3>
+                
+                <div>
+                    <label for="{{ form.exercise_minutes_per_week.id_for_label }}" class="block text-sm font-medium text-gray-300 mb-2">
+                        {{ form.exercise_minutes_per_week.label }}
+                    </label>
+                    {{ form.exercise_minutes_per_week }}
+                    {% if form.exercise_minutes_per_week.errors %}
+                        <p class="mt-1 text-sm text-red-400">{{ form.exercise_minutes_per_week.errors.0 }}</p>
+                    {% endif %}
+                    {% if form.exercise_minutes_per_week.help_text %}
+                        <p class="mt-1 text-xs text-gray-400">{{ form.exercise_minutes_per_week.help_text }}</p>
+                    {% endif %}
+                </div>
+                
+                <div>
+                    <label for="{{ form.smoking_status.id_for_label }}" class="block text-sm font-medium text-gray-300 mb-2">
+                        {{ form.smoking_status.label }}
+                    </label>
+                    {{ form.smoking_status }}
+                    {% if form.smoking_status.errors %}
+                        <p class="mt-1 text-sm text-red-400">{{ form.smoking_status.errors.0 }}</p>
+                    {% endif %}
+                </div>
+                
+                <div>
+                    <label for="{{ form.diet_quality.id_for_label }}" class="block text-sm font-medium text-gray-300 mb-2">
+                        {{ form.diet_quality.label }}
+                    </label>
+                    {{ form.diet_quality }}
+                    {% if form.diet_quality.errors %}
+                        <p class="mt-1 text-sm text-red-400">{{ form.diet_quality.errors.0 }}</p>
+                    {% endif %}
+                </div>
+                
+                <div>
+                    <label for="{{ form.alcohol_consumption.id_for_label }}" class="block text-sm font-medium text-gray-300 mb-2">
+                        {{ form.alcohol_consumption.label }}
+                    </label>
+                    {{ form.alcohol_consumption }}
+                    {% if form.alcohol_consumption.errors %}
+                        <p class="mt-1 text-sm text-red-400">{{ form.alcohol_consumption.errors.0 }}</p>
+                    {% endif %}
+                </div>
+                
+                <div class="flex items-start">
+                    <div class="flex items-center h-5">
+                        {{ form.has_health_issues }}
+                    </div>
+                    <div class="ml-3">
+                        <label for="{{ form.has_health_issues.id_for_label }}" class="text-sm font-medium text-gray-300">
+                            {{ form.has_health_issues.label }}
+                        </label>
+                        {% if form.has_health_issues.errors %}
+                            <p class="mt-1 text-sm text-red-400">{{ form.has_health_issues.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Submit Button -->
+            <div class="pt-4">
+                <button type="submit" 
+                        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-700">
+                    Calculate My Lifespan
+                </button>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Info Box -->
+    <div class="mt-8 bg-gray-700 rounded-lg p-6 border border-gray-600">
+        <h3 class="text-lg font-semibold mb-2 text-white">How It Works</h3>
+        <p class="text-gray-300 text-sm leading-relaxed">
+            Our lifespan calculator uses a weighted formula based on various lifestyle and health factors including exercise, 
+            smoking, BMI, diet quality, alcohol consumption, and health metrics. The calculation provides an estimate based on 
+            statistical data and should be used for informational purposes only.
+        </p>
+    </div>
+</div>
+{% endblock %}
